@@ -12,7 +12,7 @@ namespace RabbitMq.Poc.Data
 {
     public abstract class BaseContextRepository
     {
-        private ConnectionFactory connectionFactory => new ConnectionFactory { Uri = new Uri("amqps://rigkxfeg:jf8QPsOXAbPG51lckmrPkoT3GQtyXPC8@jackal.rmq.cloudamqp.com/rigkxfeg") };
+        private ConnectionFactory connectionFactory => new ConnectionFactory { Uri = new Uri(Environment.GetEnvironmentVariable("defaultConnectionStringRabbitMQFleury")) };
 
         protected QueueDeclareOk QueueDeclare(string queue, bool durable, bool exclusive, bool autoDelete, IDictionary<string, object> arguments)
         {

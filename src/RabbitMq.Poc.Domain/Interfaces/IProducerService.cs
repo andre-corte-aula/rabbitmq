@@ -9,6 +9,6 @@ namespace RabbitMq.Poc.Domain.Interfaces
 {
     public interface IProducerService
     {
-        void Sender(QueueModel model);
+        void Sender(QueueModel model, MessageQueueModel message);
     }
 }

@@ -17,9 +17,9 @@ namespace RabbitMq.Poc.Domain.Services
             _cosumerRepository = cosumerRepository;
         }
 
-        public string Queue()
+        public string Get(string queue, bool autoAck)
         {
-            return _cosumerRepository.Queue();
+            return _cosumerRepository.Get(queue, autoAck);
         }
     }
 }

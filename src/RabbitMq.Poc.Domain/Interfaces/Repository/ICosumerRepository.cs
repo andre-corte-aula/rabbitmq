@@ -8,6 +8,6 @@ namespace RabbitMq.Poc.Domain.Interfaces.Repository
 {
     public interface ICosumerRepository
     {
-        string Queue();
+        string Get(string queue, bool autoAck);
     }
 }

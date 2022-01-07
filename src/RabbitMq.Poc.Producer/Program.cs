@@ -18,20 +18,30 @@ namespace RabbitMq.Poc.Producer
 
             do
             {
-                string id = Guid.NewGuid().ToString();
-                string queue = $"Teste {id}";
+                Guid id = Guid.NewGuid();
+                string queue = $"Teste_{count}";
 
                 QueueModel model = new QueueModel
                 {
                     Queue = queue,
                     AutoDelete = false,
-                    Durable = true,
+                    Durable = false,
                     Exclusive = false,
-                    Exchange = Guid.NewGuid().ToString(),
-                    RoutingKey = Guid.NewGuid().ToString(),
-                    Arguments = new Dictionary<string, object> { { id, queue }, { $"_{id}", Guid.NewGuid().ToString() } }
+                    Exchange = id.ToString(),
+                    RoutingKey = id.ToString(),
+                    Arguments = null
                 };
-                _producerService.Sender(model);
+
+                string template = (count % 2 == 0) ?
+                    @"C:\git\andre-corte-aula\rabbitmq\src\RabbitMq.Poc.Producer\Template\DeviceApp.html" :
+                        @"C:\git\andre-corte-aula\rabbitmq\src\RabbitMq.Poc.Producer\Template\Education.html";
+                MessageQueueModel message = new MessageQueueModel
+                {
+                    Id = id,
+                    Type = $"promotional_{count}",
+                    Content = File.ReadAllText(template)
+                };
+                _producerService.Sender(model, message);
 
                 Console.WriteLine(model.Queue);
                 count++;

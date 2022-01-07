@@ -10,8 +10,6 @@ namespace RabbitMq.Poc.Domain.Interfaces.Repository
 {
     public interface IProducerRepository
     {
-        void QueueBind(QueueModel model);
-        QueueDeclareOk QueueDeclarePassive(QueueModel model);
-        QueueDeclareOk Queue(QueueModel model);
+        void Queue(QueueModel model, string message);
     }
 }

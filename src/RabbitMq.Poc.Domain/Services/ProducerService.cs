@@ -1,4 +1,5 @@
-﻿using RabbitMq.Poc.Domain.Interfaces;
+﻿using Newtonsoft.Json;
+using RabbitMq.Poc.Domain.Interfaces;
 using RabbitMq.Poc.Domain.Interfaces.Repository;
 using RabbitMq.Poc.Domain.Models;
 using RabbitMQ.Client;
@@ -19,11 +20,10 @@ namespace RabbitMq.Poc.Domain.Services
             _producerRepository = producerRepository;
         }
 
-        public void Sender(QueueModel model)
+        public void Sender(QueueModel model, MessageQueueModel message)
         {
-            QueueDeclareOk result = _producerRepository.Queue(model);
-            QueueDeclareOk resultS = _producerRepository.QueueDeclarePassive(model);
-           // _producerRepository.QueueBind(model);
+            string messageValue = JsonConvert.SerializeObject(message, Formatting.Indented);
+            _producerRepository.Queue(model, messageValue);
         }
     }
 }

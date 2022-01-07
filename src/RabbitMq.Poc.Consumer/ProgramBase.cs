@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using RabbitMq.Poc.Data.IoC;
 using RabbitMq.Poc.Domain.Interfaces;
 using System;
@@ -8,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RabbitMq.Poc.Cosumer
+namespace RabbitMq.Poc.Consumer
 {
     public abstract class ProgramBase
     {
@@ -19,7 +18,7 @@ namespace RabbitMq.Poc.Cosumer
             IServiceCollection serviceCollection = new ServiceCollection();
             BootStrapper.RegisterServices(serviceCollection);
             ServiceProvider serviceProvider = serviceCollection.BuildServiceProvider();
-             
+
             _cosumerService = serviceProvider.GetService<ICosumerService>();
         }
     }

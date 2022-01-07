@@ -8,6 +8,6 @@ namespace RabbitMq.Poc.Domain.Interfaces
 {
     public interface ICosumerService
     {
-        string Queue();
+        string Get(string queue, bool autoAck);
     }
 }

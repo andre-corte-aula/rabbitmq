@@ -11,19 +11,9 @@ namespace RabbitMq.Poc.Data
 {
     public class ProducerRepository : BaseContextRepository, IProducerRepository
     {
-        public QueueDeclareOk Queue(QueueModel model)
+        public void Queue(QueueModel model, string message)
         {
-            return base.QueueDeclare(model.Queue, model.Durable, model.Exclusive, model.AutoDelete, model.Arguments);
-        }
-
-        public QueueDeclareOk QueueDeclarePassive(QueueModel model)
-        {
-            return base.QueueDeclarePassive(model.Queue);
-        }
-
-        public void QueueBind(QueueModel model)
-        {
-            base.QueueBind(model.Queue, model.Exchange, model.RoutingKey, model.Arguments);
+            base.Queue(model.Queue, model.Durable, model.Exclusive, model.AutoDelete, message, model.Arguments);
         }
     }
 }

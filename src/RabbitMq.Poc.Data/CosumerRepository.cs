@@ -1,4 +1,5 @@
 ﻿using RabbitMq.Poc.Domain.Interfaces.Repository;
+using RabbitMQ.Client;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,9 +10,10 @@ namespace RabbitMq.Poc.Data
 {
     public class CosumerRepository : BaseContextRepository, ICosumerRepository
     {
-        public string Queue()
+        public string Get(string queue, bool autoAck)
         {
-            throw new NotImplementedException();
+            BasicGetResult result = base.Get(queue, autoAck);
+            return (result != null) ? Encoding.UTF8.GetString(result.Body.ToArray()) : string.Empty;
         }
     }
 }

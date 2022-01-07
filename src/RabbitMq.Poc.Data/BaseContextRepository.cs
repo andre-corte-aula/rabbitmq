@@ -12,56 +12,39 @@ namespace RabbitMq.Poc.Data
 {
     public abstract class BaseContextRepository
     {
-        private ConnectionFactory connectionFactory => new ConnectionFactory { Uri = new Uri(Environment.GetEnvironmentVariable("defaultConnectionStringRabbitMQFleury")) };
-
-        protected QueueDeclareOk QueueDeclare(string queue, bool durable, bool exclusive, bool autoDelete, IDictionary<string, object> arguments)
+        private IModel channel => new ConnectionFactory
         {
-            using (IConnection connection = connectionFactory.CreateConnection())
-            using (IModel channel = connection.CreateModel())
-            {
-                return channel.QueueDeclare(queue, durable, exclusive, autoDelete, arguments);
-            }
+            Uri = new Uri(Environment.GetEnvironmentVariable("defaultConnectionStringRabbitMQFleury"))
+        }.CreateConnection().CreateModel();
+
+        protected void Queue(string queue, bool durable, bool exclusive, bool autoDelete, string message, IDictionary<string, object> arguments, string exchange = "")
+        {
+            // using (IConnection connection = connectionFactory.CreateConnection())
+            //using (IModel channel = connection.CreateModel())
+            //{
+            channel.QueueDeclare(queue, durable, exclusive, autoDelete, arguments);
+            byte[] body = Encoding.UTF8.GetBytes(message);
+            channel.BasicPublish(exchange, queue, null, body);
+            // }
+            // }
         }
 
-        protected QueueDeclareOk QueueDeclarePassive(string queue)
+        protected BasicGetResult Get(string queue, bool autoAck)
         {
-            using (IConnection connection = connectionFactory.CreateConnection())
-            using (IModel channel = connection.CreateModel())
+            // using (IConnection connection = connectionFactory.CreateConnection())
+            //using (IModel channel = connection.CreateModel())
+            //{
+            try
             {
-                return channel.QueueDeclarePassive(queue);
+                BasicGetResult getResult = channel.BasicGet(queue, autoAck);
+                return getResult;
             }
-        }
-
-        protected void QueueBind(string queue, string exchange, string routingKey, IDictionary<string, object> arguments)
-        {
-            using (IConnection connection = connectionFactory.CreateConnection())
-            using (IModel channel = connection.CreateModel())
+            catch (Exception)
             {
-                channel.QueueBind(queue, exchange, routingKey, arguments);
+                BasicGetResult getResult = channel.BasicGet(queue, false);
+                return null;
             }
-        }
-
-        protected void Received(string queue, string exchange, string routingKey, IDictionary<string, object> arguments)
-        {
-            using (IConnection connection = connectionFactory.CreateConnection())
-            using (IModel channel = connection.CreateModel())
-            {
-                channel.QueueBind(queue, exchange, routingKey, arguments);
-
-                EventingBasicConsumer consumer = new EventingBasicConsumer(channel);
-                consumer.Received += (ch, ea) =>
-                {
-                    byte[] body = ea.Body.ToArray();
-                    // copy or deserialise the payload
-                    // and process the message
-                    // ...
-
-                    channel.BasicAck(ea.DeliveryTag, false);
-                };
-                // this consumer tag identifies the subscription
-                // when it has to be cancelled
-                string consumerTag = channel.BasicConsume(queue, false, consumer);
-            }
+            // }
         }
     }
 }

@@ -10,11 +10,24 @@ namespace RabbitMq.Poc.Consumer
 
             do
             {
-                string queue = $"Teste_{count}";
-                string result = _cosumerService.Get(queue, true);
+                try
+                {
+                    string queue = $"poc-fleury";
+                    string result = _cosumerService.Get(queue, true);
 
-                Console.WriteLine(result);
+                    if (string.IsNullOrWhiteSpace(result))
+                    {
+
+                    }
+
+                    Console.WriteLine(result);
+                }
+                catch (Exception exception)
+                {
+
+                }
                 count++;
+
             } while (count <= 100);
         }
     }

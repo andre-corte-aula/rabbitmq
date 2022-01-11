@@ -14,26 +14,33 @@ namespace RabbitMq.Poc.Data
     {
         private IModel channel => new ConnectionFactory
         {
-            Uri = new Uri(Environment.GetEnvironmentVariable("defaultConnectionStringRabbitMQFleury"))
+            Uri = new Uri(Environment.GetEnvironmentVariable("defaultConnectionStringRabbitMQFleury", EnvironmentVariableTarget.Machine))
         }.CreateConnection().CreateModel();
+
+        protected void QueueBind(string queue, string exchange, string routingKey, IDictionary<string, object> arguments)
+        {
+            channel.QueueBind(queue, exchange, routingKey, arguments);
+        }
+
+        protected void ExchangeDeclare(string exchange, string exchangeType)
+        {
+            channel.ExchangeDeclare(exchange, exchangeType);
+        }
 
         protected void Queue(string queue, bool durable, bool exclusive, bool autoDelete, string message, IDictionary<string, object> arguments, string exchange = "")
         {
-            // using (IConnection connection = connectionFactory.CreateConnection())
-            //using (IModel channel = connection.CreateModel())
-            //{
             channel.QueueDeclare(queue, durable, exclusive, autoDelete, arguments);
             byte[] body = Encoding.UTF8.GetBytes(message);
             channel.BasicPublish(exchange, queue, null, body);
-            // }
-            // }
+        }
+
+        protected void QueuePurge(string queue)
+        {
+            channel.QueuePurge(queue);
         }
 
         protected BasicGetResult Get(string queue, bool autoAck)
         {
-            // using (IConnection connection = connectionFactory.CreateConnection())
-            //using (IModel channel = connection.CreateModel())
-            //{
             try
             {
                 BasicGetResult getResult = channel.BasicGet(queue, autoAck);
@@ -44,7 +51,6 @@ namespace RabbitMq.Poc.Data
                 BasicGetResult getResult = channel.BasicGet(queue, false);
                 return null;
             }
-            // }
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using RabbitMq.Poc.Domain.Models;
+using RabbitMQ.Client;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -14,22 +15,44 @@ namespace RabbitMq.Poc.Producer
     {
         static void Main(string[] args)
         {
+            Sender();
+
+            Purge();
+        }
+
+        static void Sender()
+        {
             int count = 0;
+
+            string exchangeTypes = ExchangeType.Direct;
+
+            QueueModel model = new QueueModel
+            {
+                AutoDelete = false,
+                Durable = false,
+                Exclusive = false,
+                Exchange = $"ex-queue-{exchangeTypes}",
+                Arguments = null,
+                ExchangeTypes = exchangeTypes
+            };
+
+            _producerService.ExchangeCreate(model);
 
             do
             {
                 Guid id = Guid.NewGuid();
-                string queue = $"Teste_{count}";
+                string queue = $"poc-fleury";
 
-                QueueModel model = new QueueModel
+                model = new QueueModel
                 {
                     Queue = queue,
                     AutoDelete = false,
                     Durable = false,
                     Exclusive = false,
-                    Exchange = id.ToString(),
-                    RoutingKey = id.ToString(),
-                    Arguments = null
+                    Exchange = "",
+                    ExchangeTypes = "",
+                    RoutingKey = $"rk-{queue}",
+                    Arguments = null,
                 };
 
                 string template = (count % 2 == 0) ?
@@ -43,8 +66,32 @@ namespace RabbitMq.Poc.Producer
                 };
                 _producerService.Sender(model, message);
 
+                //_producerService.QueueBind(model);
+
                 Console.WriteLine(model.Queue);
                 count++;
+            } while (count <= 100);
+        }
+
+        static void Purge()
+        {
+            int count = 0444;
+
+            do
+            {
+                try
+                {
+                    string queue = $"poc-fleury";
+
+                    _producerService.Purge(queue);
+
+                    Console.WriteLine(queue);
+                    count++;
+                }
+                catch (Exception exception)
+                {
+
+                }
             } while (count <= 100);
         }
     }

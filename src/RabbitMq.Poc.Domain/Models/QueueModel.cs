@@ -1,4 +1,5 @@
-﻿using System;
+﻿using RabbitMQ.Client;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -14,6 +15,7 @@ namespace RabbitMq.Poc.Domain.Models
         public bool AutoDelete { get; set; }
         public string Exchange { get; set; }
         public string RoutingKey { get; set; }
+        public string ExchangeTypes { get; set; }
         public IDictionary<string, object> Arguments { get; set; }
     }
 }
